@@ -18,6 +18,15 @@ class ExpenseListView(ListView):
             if name:
                 queryset = queryset.filter(name__icontains=name)
 
+            date_from = form.cleaned_data.get('date_from')
+            date_to = form.cleaned_data.get('date_to')
+            if date_from and date_to is None:
+                queryset = queryset.filter(date__icontains=date_from)
+            if date_to and date_from is None:
+                queryset = queryset.filter(date__icontains=date_to)
+            if date_from and date_to:
+                queryset = queryset.filter(date__range=[date_from, date_to])
+
         return super().get_context_data(
             form=form,
             object_list=queryset,
