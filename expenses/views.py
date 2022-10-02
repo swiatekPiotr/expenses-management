@@ -27,6 +27,10 @@ class ExpenseListView(ListView):
             if date_from and date_to:
                 queryset = queryset.filter(date__range=[date_from, date_to])
 
+            categories = form.cleaned_data.get('categories')
+            if categories:
+                queryset = queryset.filter(category__in=categories)
+
         return super().get_context_data(
             form=form,
             object_list=queryset,
