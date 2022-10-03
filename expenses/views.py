@@ -31,9 +31,12 @@ class ExpenseListView(ListView):
             if categories:
                 queryset = queryset.filter(category__in=categories)
 
+            total_amount = sum((obj.amount for obj in queryset))
+
         return super().get_context_data(
             form=form,
             object_list=queryset,
+            total_amount=total_amount,
             summary_per_category=summary_per_category(queryset),
             **kwargs)
 
