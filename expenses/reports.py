@@ -14,3 +14,12 @@ def summary_per_category(queryset):
         .values_list('category_name', 's')
     ))
 
+
+def summary_per_date(queryset):
+    return OrderedDict(sorted(
+        queryset
+        .order_by()
+        .values('date__year')
+        .annotate(s=Sum('amount'))
+        .values_list('date__year', 's')
+    ))

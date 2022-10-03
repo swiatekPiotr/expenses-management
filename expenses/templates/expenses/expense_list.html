@@ -60,4 +60,17 @@ Total amount spent:
 	{% endfor %}
   </tr>
 </table>
+
+<br>
+<table border="1">
+  <caption>Summary per year</caption>
+  <tr>
+    {% for date, total in summary_per_date.items %}
+	<tr>
+		<td>{{date}}:</td>
+		<td>{{total|floatformat:2}}</td>
+	</tr>
+	{% endfor %}
+  </tr>
+</table>
 {% endblock %}
