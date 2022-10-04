@@ -31,6 +31,16 @@ class ExpenseListView(ListView):
             if categories:
                 queryset = queryset.filter(category__in=categories)
 
+            sort = form.cleaned_data.get('algorithm')
+            if sort == '1':
+                queryset = queryset.order_by('-date')
+            if sort == '2':
+                queryset = queryset.order_by('date')
+            if sort == '3':
+                queryset = queryset.order_by('-category')
+            if sort == '4':
+                queryset = queryset.order_by('category')
+
         total_amount = sum((obj.amount for obj in queryset))
 
         return super().get_context_data(

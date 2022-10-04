@@ -11,6 +11,14 @@ class ExpenseSearchForm(forms.ModelForm):
     category_tuple = ((obj.id, obj.name) for obj in Category.objects.all())
     categories = forms.MultipleChoiceField(choices=category_tuple)
 
+    algorithm_choices = [
+        ('1', 'sorting by date descending'),
+        ('2', 'sorting by date ascending'),
+        ('3', 'sorting by category descending'),
+        ('4', 'sorting by category ascending')
+    ]
+    algorithm = forms.CharField(label='Select algorithm', widget=forms.Select(choices=algorithm_choices))
+
     class Meta:
         model = Expense
         fields = ('name', 'date_from', 'date_to', 'categories')
@@ -21,3 +29,4 @@ class ExpenseSearchForm(forms.ModelForm):
         self.fields['date_from'].required = False
         self.fields['date_to'].required = False
         self.fields['categories'].required = False
+        self.fields['algorithm'].required = False
