@@ -1,7 +1,8 @@
 from collections import OrderedDict
 
-from django.db.models import Sum, Value
+from django.db.models import Sum, Value, Count
 from django.db.models.functions import Coalesce
+from .models import Expense
 
 
 def summary_per_category(queryset):
@@ -23,3 +24,14 @@ def summary_per_date(queryset):
         .annotate(s=Sum('amount'))
         .values_list('date__year', 's')
     ))
+
+
+def expenses_per_category():
+    return (OrderedDict(sorted(
+        Expense.objects.all()
+        .annotate(category_name=Coalesce('category__name', Value('-')))
+        .order_by()
+        .values('category_name')
+        .annotate(c=Count('category'))
+        .values_list('category_name', 'c')
+    )))

@@ -7,6 +7,7 @@
 	<thead>
 		<tr>
 			<th>name</th>
+			<th>expenses</th>
 			<th>actions</th>
 		</tr>
 	</thead>
@@ -15,6 +16,17 @@
 		<tr>
 			<td>
 				{{obj.name}}
+			</td>
+			<td>
+				{% if obj.name in expenses_per_category.keys %}
+					{% for category, counter in expenses_per_category.items %}
+						{% if category == obj.name %}
+							{{counter}}
+						{% endif %}
+					{% endfor %}
+				{% else %}
+					<a>-</a>
+				{% endif %}
 			</td>
 			<td>
 				<a href="{% url 'expenses:category-edit' obj.id %}">edit</a>
