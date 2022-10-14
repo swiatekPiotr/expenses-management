@@ -2,9 +2,13 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import path, reverse_lazy
 from .models import Expense, Category
 from .views import ExpenseListView, CategoryListView
+from .apiviews import ExpensesApiList
+from rest_framework.urlpatterns import format_suffix_patterns
 
 
 urlpatterns = [
+    path('api/', ExpensesApiList.as_view(), name='expense-api-list'),
+
     path('expense/list/',
          ExpenseListView.as_view(),
          name='expense-list'),
@@ -59,3 +63,5 @@ urlpatterns = [
          ),
          name='category-delete'),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
