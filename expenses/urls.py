@@ -1,13 +1,15 @@
 from django.views.generic import CreateView, UpdateView, DeleteView
-from django.urls import path, reverse_lazy
+from django.urls import path, reverse_lazy, include
 from .models import Expense, Category
 from .views import ExpenseListView, CategoryListView
-from .apiviews import ExpensesApiList
-from rest_framework.urlpatterns import format_suffix_patterns
+from .apiviews import ExpensesApi
+from rest_framework import routers
 
+router = routers.DefaultRouter()
+router.register('', ExpensesApi)
 
 urlpatterns = [
-    path('api/', ExpensesApiList.as_view(), name='expense-api-list'),
+    path('api/', include(router.urls)),
 
     path('expense/list/',
          ExpenseListView.as_view(),
@@ -63,5 +65,3 @@ urlpatterns = [
          ),
          name='category-delete'),
 ]
-
-urlpatterns = format_suffix_patterns(urlpatterns)

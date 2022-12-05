@@ -1,9 +1,13 @@
 from rest_framework import serializers
-from .models import Expense
+from .models import Expense, Category
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField()
+    category = serializers.SlugRelatedField(
+        slug_field='name',
+        read_only=False,
+        queryset=Category.objects.all()
+    )
 
     class Meta:
         model = Expense
