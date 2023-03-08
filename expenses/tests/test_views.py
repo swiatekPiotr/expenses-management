@@ -38,6 +38,42 @@ class TestExpenseListView(TestCase):
         self.assertEqual(len(response.context['expense_list']), 3)
 
 
+class TestExpenseCreateView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        Expense.objects.create(name='test expense1', amount=7.77)
+
+    def set_up(self):
+        self.client = Client()
+
+    def test_post_new_object(self):
+        """
+        comparing the title of an existing object, with the one created using the post method
+        """
+        response = self.client.post(reverse('expenses:expense-create'), {
+            'name': 'test expense2',
+            'amount': 8.88
+        })
+        self.assertEquals(response.status_code, 200)
+        test_expense1 = Expense.objects.get(id=1)
+        self.assertNotEqual(test_expense1.name, 'test expense2')
+
+
+class TestExpenseDeleteView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        category_1 = Category.objects.create(name='test category')
+        Expense.objects.create(category=category_1, name='test expense', amount=6.69)
+
+    def set_up(self):
+        self.client = Client()
+
+    def test_delete_object(self):
+        response = self.client.delete(reverse('expenses:expense-delete', args=[1]))
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(Expense.objects.all().count(), 0)
+
+
 class TestCategoryListView(TestCase):
     def set_up(self):
         self.client = Client()
