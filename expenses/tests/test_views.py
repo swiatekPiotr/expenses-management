@@ -1,6 +1,9 @@
 from django.test import TestCase, Client
 from django.urls import reverse
+from rest_framework.test import APITestCase, APIClient
 from ..models import Category, Expense
+
+import json
 
 
 class TestExpenseListView(TestCase):
@@ -8,9 +11,11 @@ class TestExpenseListView(TestCase):
     def setUpTestData(cls):
         for expense_id in range(8):
             Expense.objects.create(name='test {expense_id}', amount=8.88)
+        return super().setUpTestData()
 
-    def set_up(self):
+    def setUp(self):
         self.client = Client()
+        return super().setUp()
 
     def test_url_exist(self):
         response = self.client.get('/expenses/expense/list/')
@@ -42,9 +47,11 @@ class TestExpenseCreateView(TestCase):
     @classmethod
     def setUpTestData(cls):
         Expense.objects.create(name='test expense1', amount=7.77)
+        return super().setUpTestData()
 
-    def set_up(self):
+    def setUp(self):
         self.client = Client()
+        return super().setUp()
 
     def test_post_new_object(self):
         """
@@ -64,9 +71,11 @@ class TestExpenseDeleteView(TestCase):
     def setUpTestData(cls):
         category_1 = Category.objects.create(name='test category')
         Expense.objects.create(category=category_1, name='test expense', amount=6.69)
+        return super().setUpTestData()
 
-    def set_up(self):
+    def setUp(self):
         self.client = Client()
+        return super().setUp()
 
     def test_delete_object(self):
         response = self.client.delete(reverse('expenses:expense-delete', args=[1]))
@@ -75,8 +84,9 @@ class TestExpenseDeleteView(TestCase):
 
 
 class TestCategoryListView(TestCase):
-    def set_up(self):
+    def setUp(self):
         self.client = Client()
+        return super().setUp()
 
     def test_url_exist(self):
         response = self.client.get('/expenses/category/list/')
@@ -89,3 +99,25 @@ class TestCategoryListView(TestCase):
     def test_correct_template(self):
         response = self.client.get('/expenses/category/list/')
         self.assertTemplateUsed(response, 'expenses/category_list.html')
+
+
+class TestExpensesApi(APITestCase):
+    def setUp(self):
+        self.endpoint = '/expenses/api/'
+
+        category_1 = Category.objects.create(name='test category')
+        self.expense_data = {
+            'category': f'{category_1}',
+            'name': 'test expense',
+            'amount': 6.69
+        }
+        return super().setUp()
+
+    def tearDown(self) -> None:
+        return super().tearDown()
+
+    def test_get_method(self):
+        response = APIClient.get(path=self.endpoint)
+        self.assertEquals(response.status_code, 200)
+        print(json.loads(response.content))
+        self.assertEquals(len(json.loads(response.content)), 3)
