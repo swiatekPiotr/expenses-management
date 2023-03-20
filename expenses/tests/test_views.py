@@ -104,6 +104,7 @@ class TestCategoryListView(TestCase):
 class TestExpensesApi(APITestCase):
     def setUp(self):
         self.endpoint = '/expenses/api/'
+        self.client = APIClient()
 
         category_1 = Category.objects.create(name='test category')
         self.expense_data = {
@@ -111,13 +112,33 @@ class TestExpensesApi(APITestCase):
             'name': 'test expense',
             'amount': 6.69
         }
+        Expense.objects.create(
+            category=category_1,
+            name='test expense',
+            amount=6.69
+        )
         return super().setUp()
 
     def tearDown(self) -> None:
         return super().tearDown()
 
     def test_get_method(self):
-        response = APIClient.get(path=self.endpoint)
+        response = self.client.get(path=self.endpoint)
         self.assertEquals(response.status_code, 200)
         print(json.loads(response.content))
-        self.assertEquals(len(json.loads(response.content)), 3)
+        self.assertEquals(len(json.loads(response.content)), 1)
+        self.assertEquals(response.json()[0]['amount'], '6.69')
+
+    def test_post_method(self):
+        response = self.client.post(path=self.endpoint, data=self.expense_data)
+        self.assertEquals(response.status_code, 201)
+        self.assertEquals(Expense.objects.count(), 2)
+
+    def test_retrieve_expense(self):
+        response = self.client.get(path=self.endpoint+'1/')
+        self.assertEquals(response.json()['amount'], '6.69')
+
+    def test_destroy_expense(self):
+        response = self.client.delete(path=self.endpoint + '1/')
+        self.assertEquals(response.status_code, 204)
+        self.assertEquals(Expense.objects.count(), 0)
